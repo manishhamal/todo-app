@@ -1,41 +1,45 @@
-import { FaTrashAlt } from "react-icons/fa";
-const Uncompleted = ({ task, setTask }) => {
-  const handleRemoveTask = (index) => {
-    if (confirm("Are you sure?")) {
-      const updatedArray = task.filter((item, idx) => idx !== index);
-      setTask(updatedArray);
-    }
-  };
+import { FiTrash2 } from "react-icons/fi";
 
-  const handleTaskComplete = (index) => {
-    const updatedArray = task.map((item, idx) =>
-      idx === index ? { ...item, status: !item.status } : item
-    );
+const Uncompleted = ({ task, setTask }) => {
+  const handleRemove = (idx) => {
+    if (!confirm("Are you sure?")) return;
+    const updatedArray = task.filter((item, index) => index !== idx);
     setTask(updatedArray);
   };
 
-  const listItems = task.map((item, index) => (
+  const handleComplete = (idx) => {
+    const updatedArray = task.map((item, index) =>
+      index === idx ? { ...item, status: !item.status } : item
+    );
+
+    setTask(updatedArray);
+  };
+
+  console.log(task);
+
+  const listItems = task.map((item, idx) => (
     <li
-      key={index}
+      key={idx}
       className={` ${
-        item.status ? "bg-slate-300 line-through" : "bg-slate-200"
-      } my-2 py-2 px-4 rounded-md border border-slate-400 flex items-center justify-between text-ellipsis`}
+        item.status ? "bg-slate-400 line-through" : "bg-slate-200"
+      } my-2 px-4 py-2 rounded-md flex justify-between items-center`}
     >
-      <label className="flex items-center capitalize">
+      <label className="flex gap-3 capitalize justify-center items-center">
         <input
           type="checkbox"
-          className="mr-2"
-          onChange={() => handleTaskComplete(index)}
+          className="size-4"
+          checked={item.status}
+          onChange={() => handleComplete(idx)}
         />
         {item.label}
       </label>
-      <button onClick={() => handleRemoveTask(index)}>
-        <FaTrashAlt size={15} />
+
+      <button onClick={() => handleRemove(idx)}>
+        <FiTrash2 size={20} />
       </button>
     </li>
   ));
 
-  return <ul className="mt-8 ">{listItems}</ul>;
+  return <ul className="mt-8">{listItems}</ul>;
 };
-
 export default Uncompleted;
