@@ -1,10 +1,20 @@
+import { useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
+import { FaRegEdit } from "react-icons/fa";
 
 const Uncompleted = ({ task, setTask }) => {
+  const [filter, setFilter] = useState("");
+  const [search, setSearch] = useState("");
+  const [edit, setEdit] = useState(null);
+
   const handleRemove = (idx) => {
     if (!confirm("Are you sure?")) return;
     const updatedArray = task.filter((item, index) => index !== idx);
     setTask(updatedArray);
+  };
+
+  const handleEditTask = (idx) => {
+    setEdit(idx);
   };
 
   const handleComplete = (idx) => {
@@ -15,31 +25,101 @@ const Uncompleted = ({ task, setTask }) => {
     setTask(updatedArray);
   };
 
+  const handleClear = () => {
+    setTask([]);
+
+    console.log(task);
+  };
+
   console.log(task);
 
-  const listItems = task.map((item, idx) => (
-    <li
-      key={idx}
-      className={` ${
-        item.status ? "bg-slate-400 line-through" : "bg-slate-200"
-      } my-2 px-4 py-2 rounded-md flex justify-between items-center`}
-    >
-      <label className="flex gap-3 capitalize justify-center items-center">
-        <input
-          type="checkbox"
-          className="size-4"
-          checked={item.status}
-          onChange={() => handleComplete(idx)}
-        />
-        {item.label}
-      </label>
+  const listItems = task
+    .filter((item) =>
+      filter === "u" ? !item.status : filter === "c" ? item.status : item
+    )
+    .filter((item) => item.label.toLowerCase().includes(search.toLowerCase()))
+    .map((item, idx) => (
+      <li
+        key={idx}
+        className={` ${
+          item.status ? "bg-slate-400 line-through" : "bg-slate-200"
+        } my-2 px-4 py-2 rounded-md flex justify-between items-center`}
+      >
+        <label className="flex gap-3 capitalize justify-center items-center">
+          <input
+            type="checkbox"
+            className="size-4"
+            checked={item.status}
+            onChange={() => handleComplete(idx)}
+          />
+          {edit !== idx ? (
+            <span>{item.label}</span>
+          ) : (
+            <input
+              type="text"
+              value={item.label}
+              className="border border-gray-600 bg-transparent  px-3 py-1 text-sm outline-none"
+            />
+          )}
+        </label>
 
-      <button onClick={() => handleRemove(idx)}>
-        <FiTrash2 size={20} />
-      </button>
-    </li>
-  ));
+        <div>
+          <button className="mr-3" onClick={() => handleEditTask(idx)}>
+            <FaRegEdit size={20} />
+          </button>
+          <button onClick={() => handleRemove(idx)}>
+            <FiTrash2 size={20} />
+          </button>
+        </div>
+      </li>
+    ));
 
-  return <ul className="mt-8">{listItems}</ul>;
+  return (
+    <>
+      <div className="flex justify-between items-center mt-6">
+        <div className="flex gap-6 items-center">
+          <div>
+            <input
+              type="text"
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
+              className="border border-black rounded px-2 py-1 outline-none"
+              placeholder="Search...."
+            />
+          </div>
+          <div>
+            <select
+              className="border border-black p-1 rounded bg-slate-100"
+              onChange={(e) => setFilter(e.target.value)}
+              value={filter}
+            >
+              <option value="a">All</option>
+              <option value="u">Uncompleted</option>
+              <option value="c">Completed</option>
+            </select>
+          </div>
+          <h1>
+            UnCompleted Tasks:
+            {task.filter((item) => !item.status).length}
+          </h1>
+          <h1>Completed Tasks: {task.filter((item) => item.status).length} </h1>
+        </div>
+
+        <button
+          className="bg-blue-800 text-white px-6 py-1 rounded"
+          onClick={() => handleClear()}
+        >
+          clear All
+        </button>
+      </div>
+      {listItems.length ? (
+        <ul className="mt-8">{listItems}</ul>
+      ) : (
+        <div className="mt-4 font-semibold text-2xl p-8 text-center">
+          No tasks
+        </div>
+      )}
+    </>
+  );
 };
 export default Uncompleted;

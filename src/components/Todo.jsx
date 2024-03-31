@@ -54,13 +54,8 @@ const Todo = () => {
             </div>
           </form>
         </div>
-        {!task.length ? (
-          <div className="mt-4 font-semibold text-2xl p-8 text-center">
-            No tasks
-          </div>
-        ) : (
-          <Uncompleted task={task} setTask={setTask} />
-        )}
+
+        <Uncompleted task={task} setTask={setTask} />
       </div>
     </div>
   );
