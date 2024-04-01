@@ -1,11 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { FaRegEdit } from "react-icons/fa";
+import { FaRegSave } from "react-icons/fa";
 
 const Uncompleted = ({ task, setTask }) => {
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
   const [edit, setEdit] = useState(null);
+  const [updateItem, setUpdateItem] = useState("");
+
+  useEffect(() => {
+    if (edit) {
+      setUpdateItem(task?.[edit]?.label);
+    }
+  }, [edit]);
 
   const handleRemove = (idx) => {
     if (!confirm("Are you sure?")) return;
@@ -29,6 +37,25 @@ const Uncompleted = ({ task, setTask }) => {
     setTask([]);
 
     console.log(task);
+  };
+
+  const handleSaveTask = () => {
+    if (!updateItem) {
+      alert("task can't be empty");
+      return;
+    }
+
+    if (
+      task.some((item) => item.label.toLowerCase() === updateItem.toLowerCase())
+    ) {
+      alert("Task already exist ");
+      return;
+    }
+    const updatedTask = task.map((item, idx) =>
+      idx === edit ? { ...item, label: updateItem } : item
+    );
+    setTask(updatedTask);
+    setEdit(null);
   };
 
   console.log(task);
@@ -57,16 +84,23 @@ const Uncompleted = ({ task, setTask }) => {
           ) : (
             <input
               type="text"
-              value={item.label}
+              value={updateItem}
+              onChange={(e) => setUpdateItem(e.target.value)}
               className="border border-gray-600 bg-transparent  px-3 py-1 text-sm outline-none"
             />
           )}
         </label>
 
         <div>
-          <button className="mr-3" onClick={() => handleEditTask(idx)}>
-            <FaRegEdit size={20} />
-          </button>
+          {edit === idx ? (
+            <button className="mr-3" onClick={handleSaveTask}>
+              <FaRegSave size={20} />
+            </button>
+          ) : (
+            <button className="mr-3" onClick={() => handleEditTask(idx)}>
+              <FaRegEdit size={20} />
+            </button>
+          )}
           <button onClick={() => handleRemove(idx)}>
             <FiTrash2 size={20} />
           </button>
