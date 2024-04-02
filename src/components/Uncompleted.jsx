@@ -11,23 +11,23 @@ const Uncompleted = ({ task, setTask }) => {
 
   useEffect(() => {
     if (edit) {
-      setUpdateItem(task?.[edit]?.label);
+      setUpdateItem(task?.find((item) => item.id === edit)?.label);
     }
   }, [edit]);
 
-  const handleRemove = (idx) => {
+  const handleRemove = (id) => {
     if (!confirm("Are you sure?")) return;
-    const updatedArray = task.filter((item, index) => index !== idx);
+    const updatedArray = task.filter((item) => item.id !== id);
     setTask(updatedArray);
   };
 
-  const handleEditTask = (idx) => {
-    setEdit(idx);
+  const handleEditTask = (id) => {
+    setEdit(id);
   };
 
-  const handleComplete = (idx) => {
-    const updatedArray = task.map((item, index) =>
-      index === idx ? { ...item, status: !item.status } : item
+  const handleComplete = (id) => {
+    const updatedArray = task.map((item) =>
+      item.id === id ? { ...item, status: !item.status } : item
     );
 
     setTask(updatedArray);
@@ -51,8 +51,8 @@ const Uncompleted = ({ task, setTask }) => {
       alert("Task already exist ");
       return;
     }
-    const updatedTask = task.map((item, idx) =>
-      idx === edit ? { ...item, label: updateItem } : item
+    const updatedTask = task.map((item) =>
+      item.id === edit ? { ...item, label: updateItem } : item
     );
     setTask(updatedTask);
     setEdit(null);
@@ -65,9 +65,9 @@ const Uncompleted = ({ task, setTask }) => {
       filter === "u" ? !item.status : filter === "c" ? item.status : item
     )
     .filter((item) => item.label.toLowerCase().includes(search.toLowerCase()))
-    .map((item, idx) => (
+    .map((item) => (
       <li
-        key={idx}
+        key={item.id}
         className={` ${
           item.status ? "bg-slate-400 line-through" : "bg-slate-200"
         } my-2 px-4 py-2 rounded-md flex justify-between items-center`}
@@ -77,9 +77,9 @@ const Uncompleted = ({ task, setTask }) => {
             type="checkbox"
             className="size-4"
             checked={item.status}
-            onChange={() => handleComplete(idx)}
+            onChange={() => handleComplete(item.id)}
           />
-          {edit !== idx ? (
+          {edit !== item.id ? (
             <span>{item.label}</span>
           ) : (
             <input
@@ -92,16 +92,16 @@ const Uncompleted = ({ task, setTask }) => {
         </label>
 
         <div>
-          {edit === idx ? (
+          {edit === item.id ? (
             <button className="mr-3" onClick={handleSaveTask}>
               <FaRegSave size={20} />
             </button>
           ) : (
-            <button className="mr-3" onClick={() => handleEditTask(idx)}>
+            <button className="mr-3" onClick={() => handleEditTask(item.id)}>
               <FaRegEdit size={20} />
             </button>
           )}
-          <button onClick={() => handleRemove(idx)}>
+          <button onClick={() => handleRemove(item.id)}>
             <FiTrash2 size={20} />
           </button>
         </div>

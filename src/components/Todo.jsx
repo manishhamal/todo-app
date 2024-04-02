@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Uncompleted from "./Uncompleted";
+import { v4 as uuid } from "uuid";
 const Todo = () => {
   const [value, setValue] = useState("");
   const [task, setTask] = useState(
@@ -15,6 +16,7 @@ const Todo = () => {
     setTask([
       ...task,
       {
+        id: uuid(),
         label: value,
         status: false,
       },
@@ -25,7 +27,7 @@ const Todo = () => {
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(task));
   }, [task]);
-  //   console.log(task);
+  console.log(task);
 
   return (
     <div className="flex h-screen justify-center mt-6">
